@@ -85,11 +85,185 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
+        
+        /* Page Loader Styles */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loader-logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            animation: pulse 1.5s ease-in-out infinite;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .loader-logo span {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #f97316;
+        }
+        .loader-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+        .loader-spinner {
+            display: flex;
+            gap: 8px;
+        }
+        .loader-spinner span {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            animation: bounce 1.4s ease-in-out infinite both;
+        }
+        .loader-spinner span:nth-child(1) { animation-delay: -0.32s; }
+        .loader-spinner span:nth-child(2) { animation-delay: -0.16s; }
+        .loader-spinner span:nth-child(3) { animation-delay: 0s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 15px 50px rgba(0,0,0,0.3); }
+        }
+        
+        /* Alert Styles */
+        .alert-toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 9998;
+            min-width: 350px;
+            max-width: 450px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: slideInRight 0.5s ease forwards;
+            backdrop-filter: blur(10px);
+        }
+        .alert-toast.alert-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        .alert-toast.alert-error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        .alert-toast.alert-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        .alert-toast.alert-info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+        .alert-toast .alert-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .alert-toast .alert-icon i {
+            font-size: 1.25rem;
+        }
+        .alert-toast .alert-content {
+            flex: 1;
+        }
+        .alert-toast .alert-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .alert-toast .alert-message {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        .alert-toast .alert-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .alert-toast .alert-close:hover {
+            opacity: 1;
+        }
+        .alert-toast .alert-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 0 0 12px 12px;
+            animation: progressShrink 5s linear forwards;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        @keyframes progressShrink {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+        .alert-toast.closing {
+            animation: slideOutRight 0.5s ease forwards;
+        }
     </style>
     
     @stack('styles')
 </head>
 <body class="bg-gray-50">
+    <!-- Page Loader -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-logo">
+            <span>V</span>
+        </div>
+        <div class="loader-text">VRAMAN</div>
+        <div class="loader-spinner">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
     <!-- Top Bar -->
     <div class="bg-gray-900 text-white py-2 text-sm hidden md:block">
         <div class="container mx-auto px-4 flex justify-between items-center">
@@ -160,7 +334,50 @@
                     <a href="{{ route('bookings.track') }}" class="text-gray-700 hover:text-primary-600 transition">
                         <i class="fas fa-search mr-1"></i> Track Booking
                     </a>
-                    <a href="#enquiry-modal" onclick="openEnquiryModal()" class="bg-primary-600 text-white px-6 py-2 rounded-full hover:bg-primary-700 transition font-medium">
+                    
+                    @auth
+                        <!-- User Dropdown -->
+                        <div class="relative group">
+                            <button class="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition">
+                                <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                    {{ substr(Auth::user()->name, 0, 1) }}
+                                </div>
+                                <span class="font-medium">{{ Auth::user()->name }}</span>
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                                <div class="py-2">
+                                    <a href="{{ route('profile') }}" class="block px-4 py-2 hover:bg-primary-50 hover:text-primary-600">
+                                        <i class="fas fa-user mr-2"></i> My Profile
+                                    </a>
+                                    <a href="{{ route('bookings.track') }}" class="block px-4 py-2 hover:bg-primary-50 hover:text-primary-600">
+                                        <i class="fas fa-calendar-check mr-2"></i> My Bookings
+                                    </a>
+                                    @if(Auth::user()->role === 'admin' || Auth::user()->is_admin)
+                                        <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 hover:bg-primary-50 hover:text-primary-600">
+                                            <i class="fas fa-cog mr-2"></i> Admin Panel
+                                        </a>
+                                    @endif
+                                    <hr class="my-2">
+                                    <form action="{{ route('user.logout') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left px-4 py-2 hover:bg-red-50 hover:text-red-600">
+                                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-primary-600 transition font-medium">
+                            <i class="fas fa-sign-in-alt mr-1"></i> Login
+                        </a>
+                        <a href="{{ route('register') }}" class="bg-primary-600 text-white px-5 py-2 rounded-full hover:bg-primary-700 transition font-medium">
+                            <i class="fas fa-user-plus mr-1"></i> Register
+                        </a>
+                    @endauth
+                    
+                    <a href="#enquiry-modal" onclick="openEnquiryModal()" class="bg-secondary-600 text-white px-6 py-2 rounded-full hover:bg-secondary-700 transition font-medium">
                         Plan Your Trip
                     </a>
                 </div>
@@ -180,27 +397,109 @@
                 <a href="{{ route('about') }}" class="block py-2 text-gray-700 hover:text-primary-600">About Us</a>
                 <a href="{{ route('contact') }}" class="block py-2 text-gray-700 hover:text-primary-600">Contact</a>
                 <a href="{{ route('bookings.track') }}" class="block py-2 text-gray-700 hover:text-primary-600">Track Booking</a>
+                
+                <div class="border-t border-gray-200 my-3 pt-3">
+                    @auth
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                {{ substr(Auth::user()->name, 0, 1) }}
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">{{ Auth::user()->name }}</p>
+                                <p class="text-sm text-gray-500">{{ Auth::user()->email }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('profile') }}" class="block py-2 text-gray-700 hover:text-primary-600">
+                            <i class="fas fa-user mr-2"></i> My Profile
+                        </a>
+                        @if(Auth::user()->role === 'admin' || Auth::user()->is_admin)
+                            <a href="{{ route('admin.dashboard') }}" class="block py-2 text-gray-700 hover:text-primary-600">
+                                <i class="fas fa-cog mr-2"></i> Admin Panel
+                            </a>
+                        @endif
+                        <form action="{{ route('user.logout') }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="block w-full text-left py-2 text-red-600 hover:text-red-700">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="block py-2 text-gray-700 hover:text-primary-600">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Login
+                        </a>
+                        <a href="{{ route('register') }}" class="block py-2 text-primary-600 font-medium">
+                            <i class="fas fa-user-plus mr-2"></i> Create Account
+                        </a>
+                    @endauth
+                </div>
+                
                 <a href="#" onclick="openEnquiryModal()" class="mt-3 inline-block bg-primary-600 text-white px-6 py-2 rounded-full">Plan Your Trip</a>
             </div>
         </nav>
     </header>
 
-    <!-- Flash Messages -->
+    <!-- Flash Messages - Toast Style -->
     @if(session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative container mx-auto mt-4" role="alert">
-        <span class="block sm:inline">{{ session('success') }}</span>
-        <button class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove()">
+    <div class="alert-toast alert-success" id="successAlert">
+        <div class="alert-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="alert-content">
+            <div class="alert-title">Success!</div>
+            <div class="alert-message">{{ session('success') }}</div>
+        </div>
+        <button class="alert-close" onclick="closeAlert(this)">
             <i class="fas fa-times"></i>
         </button>
+        <div class="alert-progress"></div>
     </div>
     @endif
 
     @if(session('error'))
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative container mx-auto mt-4" role="alert">
-        <span class="block sm:inline">{{ session('error') }}</span>
-        <button class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove()">
+    <div class="alert-toast alert-error" id="errorAlert">
+        <div class="alert-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="alert-content">
+            <div class="alert-title">Error!</div>
+            <div class="alert-message">{{ session('error') }}</div>
+        </div>
+        <button class="alert-close" onclick="closeAlert(this)">
             <i class="fas fa-times"></i>
         </button>
+        <div class="alert-progress"></div>
+    </div>
+    @endif
+
+    @if(session('warning'))
+    <div class="alert-toast alert-warning" id="warningAlert">
+        <div class="alert-icon">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="alert-content">
+            <div class="alert-title">Warning!</div>
+            <div class="alert-message">{{ session('warning') }}</div>
+        </div>
+        <button class="alert-close" onclick="closeAlert(this)">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="alert-progress"></div>
+    </div>
+    @endif
+
+    @if(session('info'))
+    <div class="alert-toast alert-info" id="infoAlert">
+        <div class="alert-icon">
+            <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="alert-content">
+            <div class="alert-title">Info</div>
+            <div class="alert-message">{{ session('info') }}</div>
+        </div>
+        <button class="alert-close" onclick="closeAlert(this)">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="alert-progress"></div>
     </div>
     @endif
 
@@ -360,6 +659,30 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <script>
+        // Page Loader
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('pageLoader').classList.add('hidden');
+            }, 800);
+        });
+
+        // Alert Functions
+        function closeAlert(button) {
+            const alert = button.closest('.alert-toast');
+            alert.classList.add('closing');
+            setTimeout(() => alert.remove(), 500);
+        }
+
+        // Auto-dismiss alerts after 5 seconds
+        document.querySelectorAll('.alert-toast').forEach(function(alert) {
+            setTimeout(function() {
+                if (alert && !alert.classList.contains('closing')) {
+                    alert.classList.add('closing');
+                    setTimeout(() => alert.remove(), 500);
+                }
+            }, 5000);
+        });
+
         // Mobile Menu Toggle
         document.getElementById('mobile-menu-btn').addEventListener('click', function() {
             const menu = document.getElementById('mobile-menu');
